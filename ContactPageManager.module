@@ -4,5 +4,20 @@ namespace Processwire;
 
 class ContactPageManager extends WireData implements Module{
 
+    public static function getModuleInfo() {
+        return array(
+            'title' => 'Contact Page Manager',
+            'version' => "1.0.0",
+            'author' => 'dojoVader/Sephiroth',
+            'summary' => 'This module simply logs all contact messages to the Database for you to see, this is meant as a tutorial',
+            'href' => 'https://github.com/dojoVader/ContactPageManager',
+            'autoload' => false, // set to true if module should auto-load at boot
+                'requires' => array(
+                    'PHP>=5.4.1', 
+                    'ProcessWire>=2.4.1'
+                    )
+            
+            );
+        }
 
-}
+    }
