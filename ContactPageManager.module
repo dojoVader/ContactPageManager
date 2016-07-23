@@ -2,7 +2,7 @@
 
 namespace Processwire;
 
-class ContactPageManager extends WireData implements Module{
+class ContactPageManager extends WireData implements Module,ConfigurableModule{
 	
 	public function __construct(){
 		foreach(self::getDefaultData() as $key=>$value){
