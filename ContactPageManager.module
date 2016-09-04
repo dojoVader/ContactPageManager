@@ -2,22 +2,99 @@
 
 namespace Processwire;
 
-class ContactPageManager extends WireData implements Module{
+class ContactPageManager extends Process implements Module, ConfigurableModule
+{
 
-    public static function getModuleInfo() {
+    public function __construct()
+    {
+        foreach (self::getDefaultData() as $key => $value) {
+            $this->{
+            $key
+            }
+                = $value;
+        }
+    }
+
+    public function ___install()
+    {
+        $installableStatement = "CREATE TABLE IF NOT EXISTS `contact_manager` (
+          `id` int(11) NOT NULL AUTO_INCREMENT,
+          `visitor` varchar(100) NOT NULL,
+          `comment` varchar(300) NOT NULL,
+          `date_created` datetime NOT NULL,
+          `email` varchar(100) NOT NULL,
+          `website` varchar(100) NOT NULL,
+          PRIMARY KEY (`id`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;";
+
+        $database = wire('database');
+        $database->exec($installableStatement);
+        $this->message("Contact Manager database has been created");
+        parent::___install();
+    }
+
+    public function ___uninstall()
+    {
+        $deleteStatement = "DROP TABLE  `contact_manager` ";
+        $database = wire("database");
+        $this->message("Contact Manager database has been dropped");
+        parent::___uninstall();
+    }
+
+    public static function getModuleInfo()
+    {
         return array(
             'title' => 'Contact Page Manager',
             'version' => "1.0.0",
             'author' => 'dojoVader/Sephiroth',
             'summary' => 'This module simply logs all contact messages to the Database for you to see, this is meant as a tutorial',
             'href' => 'https://github.com/dojoVader/ContactPageManager',
-            'autoload' => false, // set to true if module should auto-load at boot
-                'requires' => array(
-                    'PHP>=5.4.1', 
-                    'ProcessWire>=2.4.1'
-                    )
-            
-            );
-        }
+            'autoload' => false, // 		set to true if module should auto-load at boot
+            'requires' => array(
+                'PHP>=5.4.1',
+                'ProcessWire>=2.4.1'
+            ),
+            'page' => array(            // optionally install/uninstall a page for this process automatically
+                'name' => 'contact-view',    // name of page to create
+                'parent' => 'setup',    // parent name (under admin) or omit or blank to assume admin root
+                'title' => 'Contact Entries',    // title of page, or omit to use the title already specified above
+            )
+
+
+        );
+    }
+
+    static function getDefaultData()
+    {
+        return [
+            "contact_email" => ""
+        ];
+    }
+
+
+    /**
+     * Return an InputfieldsWrapper of Inputfields used to configure the class
+     *
+     * @param array $data Array of config values indexed by field name
+     * @return InputfieldsWrapper
+     *
+     */
+    public static function getModuleConfigInputfields(array $data)
+    {
+
+        $data = array_merge(self::getDefaultData(), $data);
+
+        $wrapper = new InputFieldWrapper();
+
+        $f = wire('modules')->get("InputfieldEmail");
+        $f->attr('id+name', 'contact_email');
+        $f->label = __("Enter a valid email to be used to notify user");
+        $f->description = __("Email Address");
+        $f->value = $data['contact_email'];
+        $wrapper->add($f);
+
+        return $wrapper;
 
     }
+
+}
