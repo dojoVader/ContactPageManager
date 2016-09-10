@@ -8,10 +8,7 @@ class ContactPageManager extends Process implements Module, ConfigurableModule
     public function __construct()
     {
         foreach (self::getDefaultData() as $key => $value) {
-            $this->{
-            $key
-            }
-                = $value;
+            $this->{$key} = $value;
         }
     }
 
@@ -33,10 +30,26 @@ class ContactPageManager extends Process implements Module, ConfigurableModule
         parent::___install();
     }
 
+    public function ___execute(){
+        $out = '';
+        $numFiles = 0;
+        $user = $this->wire('user');
+        $table = $this->modules->get('MarkupAdminDataTable'); 
+        $table->setEncodeEntities(false); 
+        $table->headerRow(array(
+            $this->_x('id', 'th'),
+            $this->_x('visitor', 'th'), 
+            $this->_x('comment', 'th'), 
+            $this->_x('date_created', 'th'), 
+            $this->_x('email', 'th'),
+            $this->_x('website', 'th'), 
+            ));
+    }
+
     public function ___uninstall()
     {
         $deleteStatement = "DROP TABLE  `contact_manager` ";
-        $database = wire("database");
+        $database        = wire("database");
         $this->message("Contact Manager database has been dropped");
         parent::___uninstall();
     }
@@ -44,33 +57,31 @@ class ContactPageManager extends Process implements Module, ConfigurableModule
     public static function getModuleInfo()
     {
         return array(
-            'title' => 'Contact Page Manager',
-            'version' => "1.0.0",
-            'author' => 'dojoVader/Sephiroth',
-            'summary' => 'This module simply logs all contact messages to the Database for you to see, this is meant as a tutorial',
-            'href' => 'https://github.com/dojoVader/ContactPageManager',
-            'autoload' => false, // 		set to true if module should auto-load at boot
+            'title'    => 'Contact Page Manager',
+            'version'  => "1.0.0",
+            'author'   => 'dojoVader/Sephiroth',
+            'summary'  => 'This module simply logs all contact messages to the Database for you to see, this is meant as a tutorial',
+            'href'     => 'https://github.com/dojoVader/ContactPageManager',
+            'autoload' => false, //         set to true if module should auto-load at boot
             'requires' => array(
                 'PHP>=5.4.1',
-                'ProcessWire>=2.4.1'
+                'ProcessWire>=2.4.1',
             ),
-            'page' => array(            // optionally install/uninstall a page for this process automatically
-                'name' => 'contact-view',    // name of page to create
-                'parent' => 'setup',    // parent name (under admin) or omit or blank to assume admin root
-                'title' => 'Contact Entries',    // title of page, or omit to use the title already specified above
-            )
-
+            'page'     => array( // optionally install/uninstall a page for this process automatically
+                'name'   => 'contact-view', // name of page to create
+                'parent' => 'setup', // parent name (under admin) or omit or blank to assume admin root
+                'title'  => 'Contact Entries', // title of page, or omit to use the title already specified above
+            ),
 
         );
     }
 
-    static function getDefaultData()
+    public static function getDefaultData()
     {
         return [
-            "contact_email" => ""
+            "contact_email" => "",
         ];
     }
-
 
     /**
      * Return an InputfieldsWrapper of Inputfields used to configure the class
@@ -88,9 +99,9 @@ class ContactPageManager extends Process implements Module, ConfigurableModule
 
         $f = wire('modules')->get("InputfieldEmail");
         $f->attr('id+name', 'contact_email');
-        $f->label = __("Enter a valid email to be used to notify user");
+        $f->label       = __("Enter a valid email to be used to notify user");
         $f->description = __("Email Address");
-        $f->value = $data['contact_email'];
+        $f->value       = $data['contact_email'];
         $wrapper->add($f);
 
         return $wrapper;
