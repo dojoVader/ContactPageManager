@@ -12,6 +12,14 @@ class ContactPageManager extends Process implements Module, ConfigurableModule
         }
     }
 
+    public function getSampleData()
+    {
+        return [
+            ['id' => 1, 'visitor' => 'Okeowo Aderemi', 'comment' => 'Death God', 'date_created' => '02/02/2016', 'email' => 'okeowoaderemi@gmail.com', 'website' => 'www.okeowoaderemi.com'],
+            ['id' => 2, 'visitor' => 'Okeowo Adetayo', 'comment' => 'Death Lord', 'date_created' => '02/01/2016', 'email' => 'okeowoadetayo@gmail.com', 'website' => 'www.okeowoadetayo.com'],
+        ];
+    }
+    
     public function ___install()
     {
         $installableStatement = "CREATE TABLE IF NOT EXISTS `contact_manager` (
@@ -30,20 +38,33 @@ class ContactPageManager extends Process implements Module, ConfigurableModule
         parent::___install();
     }
 
-    public function ___execute(){
-        $out = '';
+    public function ___execute()
+    {
+        $out      = '';
         $numFiles = 0;
-        $user = $this->wire('user');
-        $table = $this->modules->get('MarkupAdminDataTable'); 
-        $table->setEncodeEntities(false); 
+        $user     = $this->wire('user');
+        $table    = $this->modules->get('MarkupAdminDataTable');
+        $table->setEncodeEntities(false);
         $table->headerRow(array(
             $this->_x('id', 'th'),
-            $this->_x('visitor', 'th'), 
-            $this->_x('comment', 'th'), 
-            $this->_x('date_created', 'th'), 
+            $this->_x('visitor', 'th'),
+            $this->_x('comment', 'th'),
+            $this->_x('Date', 'th'),
             $this->_x('email', 'th'),
-            $this->_x('website', 'th'), 
-            ));
+            $this->_x('website', 'th'),
+        ));
+        foreach ($this->getSampleData() as $record) {
+            $table->row([
+                $record['id'],
+                $record['visitor'],
+                $record['comment'],
+                $record['date_created'],
+                $record['email'],
+                $record['website'],
+            ]);
+        }
+
+        return $table->render();
     }
 
     public function ___uninstall()
